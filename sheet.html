@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasure Hunt Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            padding: 20px;
+            text-align: center;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #e6e6e6;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #timer {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Enter Your Details to Start the Treasure Hunt</h2>
+    <form id="treasureHuntForm">
+        <h3>Member 1</h3>
+        <label for="name1">Name:</label>
+        <input type="text" id="name1" name="name1" required>
+
+        <label for="department1">Department:</label>
+        <input type="text" id="department1" name="department1" required>
+
+        <h3>Member 2</h3>
+        <label for="name2">Name:</label>
+        <input type="text" id="name2" name="name2" required>
+
+        <label for="department2">Department:</label>
+        <input type="text" id="department2" name="department2" required>
+
+        <h3>Member 3</h3>
+        <label for="name3">Name:</label>
+        <input type="text" id="name3" name="name3" required>
+
+        <label for="department3">Department:</label>
+        <input type="text" id="department3" name="department3" required>
+
+        <button type="submit">Start Treasure Hunt</button>
+    </form>
+    
+    <div id="timer"></div>
+</div>
+
+<script>
+    let startTime, endTime;
+
+    document.getElementById('treasureHuntForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the default way
+
+        // Record the start time
+        startTime = new Date();
+
+        // Get user inputs for all members
+        const name1 = document.getElementById('name1').value;
+        const department1 = document.getElementById('department1').value;
+        const name2 = document.getElementById('name2').value;
+        const department2 = document.getElementById('department2').value;
+        const name3 = document.getElementById('name3').value;
+        const department3 = document.getElementById('department3').value;
+
+        // Show a welcome message with the user details
+        const message = `
+            Welcome ${name1} from ${department1}!
+            Welcome ${name2} from ${department2}!
+            Welcome ${name3} from ${department3}!
+        `;
+        alert(message);
+        
+        // Start a timer (e.g., 10 seconds)
+        let timeLeft = 10; // Set your desired countdown time in seconds
+        const timerDisplay = document.getElementById('timer');
+        timerDisplay.textContent = `Starting in ${timeLeft} seconds...`;
+
+        const countdown = setInterval(() => {
+            timeLeft--;
+            timerDisplay.textContent = `Starting in ${timeLeft} seconds...`;
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                // Record end time and calculate time taken
+                endTime = new Date();
+                const timeTaken = Math.round((endTime - startTime) / 1000); // Time in seconds
+
+                // Redirect to the Interacty game
+                window.location.href = "https://interacty.me/projects/d851c461bc11984a"; // Replace with your actual game URL
+
+                // Send data to Google Sheets
+                const formData = new FormData();
+                formData.append('name1', name1);
+                formData.append('department1', department1);
+                formData.append('name2', name2);
+                formData.append('department2', department2);
+                formData.append('name3', name3);
+                formData.append('department3', department3);
+                formData.append('timeTaken', timeTaken);
+
+                fetch('https://script.google.com/macros/s/AKfycbyqh4q78SWA7CSifcSXYPJUf3l88TLPaGEzj4DtQg/dev', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    console.log('Form submitted successfully');
+                }).catch(error => {
+                    console.error('Error submitting the form', error);
+                });
+            }
+        }, 1000);
+    });
+</script>
+
+</body>
+</html>
